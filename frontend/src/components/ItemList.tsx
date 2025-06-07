@@ -5,17 +5,18 @@ interface ItemListProps {
   items: RouletteItem[];
   onDeleteItem: (id: string) => void;
   isSpinning: boolean;
-  // highlightedItemId?: string | null; // For visual animation later
+  highlightedItemId?: string | null;
 }
 
 const ItemList: React.FC<ItemListProps> = ({
   items,
   onDeleteItem,
-  isSpinning /*, highlightedItemId */,
+  isSpinning,
+  highlightedItemId,
 }) => {
   if (items.length === 0) {
     return (
-      <p className="text-center text-slate-400 py-4">
+      <p className="text-left text-slate-400 py-4">
         아직 추가된 항목이 없습니다. 내용을 입력해주세요!
       </p>
     );
@@ -27,13 +28,15 @@ const ItemList: React.FC<ItemListProps> = ({
         <li
           key={item.id}
           className={`
-            flex justify-between items-center p-3 bg-slate-600 rounded-md group transition-all duration-150 ease-in-out
+            flex justify-between items-center p-3 bg-slate-600 rounded-md group transition-all duration-50
             ${
-              /* highlightedItemId === item.id ? 'ring-2 ring-yellow-400 scale-105 shadow-lg' : */ ""
+              highlightedItemId === item.id
+                ? "ring-2 ring-yellow-400 scale-105 shadow-lg"
+                : ""
             }
           `}
         >
-          <span className="text-slate-50 break-all">{item.text}</span>
+          <span className="text-slate-50 break-keep">{item.text}</span>
           <button
             onClick={() => onDeleteItem(item.id)}
             disabled={isSpinning}

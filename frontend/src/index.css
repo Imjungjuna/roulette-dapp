@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "PyeojinGothic-Bold";
+  font-weight: normal;
+  src: url("./fonts/PyeojinGothic-Regular.ttf") format("truetype");
+}
+
 body {
-  font-family: "Inter", sans-serif; /* Example font */
+  font-family: "PyeojinGothic-Bold";
 }

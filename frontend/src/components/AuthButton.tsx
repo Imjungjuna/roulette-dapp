@@ -43,7 +43,11 @@ export function AuthButton() {
     console.log("Connected with provider:", provider); // 유지하셨던 로그
     return (
       <>
-        <button onClick={() => disconnect()} disabled={isLoading}>
+        <button
+          onClick={() => disconnect()}
+          className="text-gray-300 hover:text-gray-200 transition transform hover:cursor-pointer font-semibold"
+          disabled={isLoading}
+        >
           {status === "disconnecting" ? "로그아웃 중..." : "로그아웃"}
         </button>
       </>
@@ -51,7 +55,11 @@ export function AuthButton() {
   } else {
     // 연결되지 않은 상태: 로그인 버튼 표시
     return (
-      <button onClick={() => connect()} disabled={isLoading}>
+      <button
+        className="text-gray-300 hover:text-gray-200 transition transform hover:cursor-pointer font-semibold"
+        onClick={() => connect()}
+        disabled={isLoading}
+      >
         {status === "connecting" ? "로그인 중..." : "로그인"}
       </button>
     );

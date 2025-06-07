@@ -1,25 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react"; // useEffect와 useRef를 import 합니다.
 import ItemInput from "./components/ItemInput";
 import ItemList from "./components/ItemList";
 import SpinButton from "./components/SpinButton";
 import ResultDisplay from "./components/ResultDisplay";
-import type { RouletteItem } from "./types"; // Import the type
+import type { RouletteItem } from "./types";
 import "./App.css";
-
-import WalletUIButton from "./components/useWalletUI";
-import { type IUseWalletUI } from "@web3auth/modal/react";
 import { AuthButton } from "./components/AuthButton";
 
 function App() {
   const [items, setItems] = useState<RouletteItem[]>([]);
-  const [newItemText, setNewItemText] = useState<string>(""); // For controlled input if needed, or manage in ItemInput
   const [selectedItem, setSelectedItem] = useState<RouletteItem | null>(null);
-  const [isSpinning, setIsSpinning] = useState<boolean>(false); // For UI feedback during spin
+  const [highlightedItemId, setHighlightedItemId] = useState<string | null>(
+    null
+  );
+  const [isSpinning, setIsSpinning] = useState<boolean>(false);
+  const animationFrameIdRef = useRef<number | null>(null); // 애니메이션 프레임 ID를 저장하기 위한 ref
 
   const handleAddItem = (text: string) => {
     if (!text.trim()) return;
     const newItem: RouletteItem = {
-      id: crypto.randomUUID(), // Simple unique ID
+      id: crypto.randomUUID(),
       text: text.trim(),
     };
     setItems((prevItems) => [...prevItems, newItem]);
@@ -27,7 +27,6 @@ function App() {
 
   const handleDeleteItem = (id: string) => {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
-    // If the deleted item was the selected one, clear selection
     if (selectedItem?.id === id) {
       setSelectedItem(null);
     }
@@ -40,60 +39,116 @@ function App() {
     }
 
     setIsSpinning(true);
-    setSelectedItem(null); // Clear previous selection
+    setSelectedItem(null);
+    // highlightedItemId는 애니메이션 첫 프레임에서 설정됩니다.
 
-    // Simple local spin simulation with animation effect
-    const spinDuration = 1000; // Total spin duration in ms
-    const intervalTime = 100; // Highlight change interval in ms
-    let iterations = spinDuration / intervalTime;
-    let currentIndex = 0;
+    const totalDuration = 5000; // 총 애니메이션 시간: 5초
+    const finalWinnerIndex = Math.floor(Math.random() * items.length);
+    const finalWinnerItem = items[finalWinnerIndex]; // 최종 선택될 아이템 객체
 
-    const highlightInterval = setInterval(() => {
-      // For now, we won't visually highlight in ItemList, just simulate the delay
-      // In a real UI, you'd update a 'highlightedItemId' state and pass it to ItemList
-      currentIndex = (currentIndex + 1) % items.length;
-      iterations--;
+    const animationStartTime = Date.now();
 
-      if (iterations <= 0) {
-        clearInterval(highlightInterval);
-        const randomIndex = Math.floor(Math.random() * items.length);
-        setSelectedItem(items[randomIndex]);
-        setIsSpinning(false);
+    // 이징 함수 (t: 진행률 0~1, 끝으로 갈수록 느려짐)
+    const easeOutQuad = (t: number): number => 1 - Math.pow(1 - t, 2);
+
+    function animate() {
+      const timeElapsed = Date.now() - animationStartTime;
+      let progress = timeElapsed / totalDuration;
+
+      if (progress >= 1) {
+        progress = 1; // 애니메이션 종료 시점에서는 진행률을 1로 고정
       }
-    }, intervalTime);
+
+      // 아이템 수에 따라 최소 회전 수를 동적으로 조절 (예시)
+      // 아이템이 1개일 때는 의미가 없지만, 최소 2개부터 동작합니다.
+      // items.length가 0인 경우는 함수 시작 시점에서 이미 처리됩니다.
+      let baseSpins;
+      if (items.length <= 3) {
+        baseSpins = 10;
+      } else if (items.length <= 5) {
+        baseSpins = 8;
+      } else if (items.length <= 8) {
+        baseSpins = 6;
+      } else if (items.length <= 12) {
+        baseSpins = 4;
+      } else {
+        baseSpins = 2;
+      }
+      // 아이템 5개당 약 0.5바퀴 추가
+      const dynamicSpins = Math.floor(items.length / 10);
+      const numberOfFullSpins = baseSpins + dynamicSpins;
+
+      // virtualTotalSteps % items.length = finalWinnerIndex
+      const virtualTotalSteps =
+        items.length * numberOfFullSpins + finalWinnerIndex;
+
+      const easedProgress = easeOutQuad(progress);
+      const currentVirtualStep = easedProgress * virtualTotalSteps;
+
+      const currentHighlightArrayIndex =
+        Math.floor(currentVirtualStep) % items.length;
+
+      if (items[currentHighlightArrayIndex]) {
+        setHighlightedItemId(items[currentHighlightArrayIndex].id);
+      }
+
+      if (progress === 1) {
+        setHighlightedItemId(finalWinnerItem.id);
+        setSelectedItem(finalWinnerItem);
+        setIsSpinning(false);
+        if (animationFrameIdRef.current) {
+          cancelAnimationFrame(animationFrameIdRef.current);
+          animationFrameIdRef.current = null;
+        }
+        return;
+      }
+
+      // 다음 프레임 요청
+      animationFrameIdRef.current = requestAnimationFrame(animate);
+    }
+
+    // 만약 이전 애니메이션 프레임 요청이 있었다면 취소합니다 (안전 장치).
+    if (animationFrameIdRef.current) {
+      cancelAnimationFrame(animationFrameIdRef.current);
+    }
+    animate();
   };
 
+  // 컴포넌트가 언마운트될 때 진행 중인 애니메이션 프레임 요청을 정리합니다.
+  useEffect(() => {
+    return () => {
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center p-4 sm:p-8 font-sans">
-      {/* Header */}
-      <header className="w-full max-w-3xl mb-8 flex justify-between items-center">
-        <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
-          Spin My DApp! (Local Mode)
+    <div className="relative min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center p-4 sm:p-8">
+      <header className="w-full max-w-4xl flex justify-between my-6 md:my-8 items-center">
+        <h1 className="pl-4 md:pl-6 text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
+          할일 정하기 룰렛!
         </h1>
-        {/* Placeholder for WalletConnector or user info later */}
-        <div className="w-32 h-10 bg-slate-700 rounded-md flex-row items-center justify-center text-sm text-slate-400">
-          {/* <WalletUIButton/> */}
+        <div className="w-32 h-10 hover:scale-101 transition transform bg-slate-700 hover:cursor-pointer rounded-md flex flex-row items-center justify-center text-sm text-slate-400">
           <AuthButton />
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="w-full max-w-3xl bg-slate-800 shadow-2xl rounded-lg p-6 sm:p-8">
-        {/* Item Input */}
-        <div className="mb-6">
+      <main className="w-full max-w-4xl bg-slate-800 shadow-2xl rounded-lg p-6 sm:p-8 mt-6">
+        <div className="mb-6 md:mb-10">
           <ItemInput onAddItem={handleAddItem} disabled={isSpinning} />
         </div>
 
-        {/* Item List & Spin Button */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="md:col-span-2 bg-slate-700 p-4 rounded-md max-h-96 overflow-y-auto">
+          <div className="md:col-span-2 bg-slate-700 p-4 rounded-md min-h-40">
             <ItemList
               items={items}
               onDeleteItem={handleDeleteItem}
               isSpinning={isSpinning}
+              highlightedItemId={highlightedItemId}
             />
           </div>
-          <div className="flex flex-col justify-center items-center bg-slate-700 p-4 rounded-md">
+          <div className="flex bg-slate-700 p-3 rounded-md">
             <SpinButton
               onSpin={handleSpin}
               disabled={isSpinning || items.length === 0}
@@ -101,10 +156,11 @@ function App() {
           </div>
         </div>
 
-        {/* Result Display */}
         {isSpinning && (
-          <div className="mt-8 text-center text-sky-400">
-            <p className="text-xl animate-pulse">돌아가는 중...</p>
+          <div className="mt-8 text-center text-purple-500">
+            <p className="text-lg md:text-xl font-semibold animate-pulse">
+              돌아가는 중...
+            </p>
           </div>
         )}
         {selectedItem && !isSpinning && (
@@ -114,8 +170,7 @@ function App() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="w-full max-w-3xl mt-12 text-center text-sm text-slate-500">
+      <footer className="absolute w-full bottom-8 max-w-3xl text-center text-sm text-slate-500">
         <p>
           &copy; {new Date().getFullYear()} My Roulette DApp. All rights
           reserved.
