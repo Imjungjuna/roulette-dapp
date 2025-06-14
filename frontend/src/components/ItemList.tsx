@@ -28,7 +28,7 @@ const ItemList: React.FC<ItemListProps> = ({
         <li
           key={item.id}
           className={`
-            flex justify-between items-center p-3 bg-slate-600 rounded-md group transition-all duration-50
+            flex justify-between items-center px-3 py-2 sm:p-3 bg-slate-600 rounded-md group transition-all duration-50
             ${
               highlightedItemId === item.id
                 ? "ring-2 ring-yellow-400 scale-105 shadow-lg"
@@ -36,7 +36,9 @@ const ItemList: React.FC<ItemListProps> = ({
             }
           `}
         >
-          <span className="text-slate-50 break-keep">{item.text}</span>
+          <span className="text-slate-50 break-keep text-sm sm:text-base tracking-tight">
+            {item.text}
+          </span>
           <button
             onClick={() => onDeleteItem(item.id)}
             disabled={isSpinning}

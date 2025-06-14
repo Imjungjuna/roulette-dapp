@@ -124,23 +124,26 @@ function App() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center p-4 sm:p-8">
-      <header className="w-full max-w-4xl flex justify-between my-6 md:my-8 items-center">
+    <div className="relative min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center p-0 sm:p-8">
+      <header className="pt-10 sm:pt-0 w-full max-w-4xl flex justify-around sm:justify-between my-6 md:my-8 items-center">
         <h1 className="pl-4 md:pl-6 text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
-          할일 정하기 룰렛!
+          할일 정하기 룰렛! 뭘 할지 고민된다면..
         </h1>
-        <div className="w-32 h-10 hover:scale-101 transition transform bg-slate-700 hover:cursor-pointer rounded-md flex flex-row items-center justify-center text-sm text-slate-400">
+        <h1 className="hidden absolute pl-4 md:pl-6 text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
+          투두리스트 룰렛, 투두 룰렛
+        </h1>
+        <div className="sm:w-32 w-20 mr-2 md:mr-4 h-10 hover:scale-101 transition transform bg-slate-700 hover:cursor-pointer rounded-md flex flex-row items-center justify-center text-sm text-slate-400">
           <AuthButton />
         </div>
       </header>
 
-      <main className="w-full max-w-4xl bg-slate-800 shadow-2xl rounded-lg p-6 sm:p-8 mt-6">
+      <main className="w-full max-w-4xl bg-slate-800 shadow-2xl rounded-lg p-3 sm:p-8 mt-6">
         <div className="mb-6 md:mb-10">
           <ItemInput onAddItem={handleAddItem} disabled={isSpinning} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="md:col-span-2 bg-slate-700 p-4 rounded-md min-h-40">
+          <div className="md:col-span-2 bg-slate-700 py-4 p-3 sm:p-4 rounded-md min-h-40">
             <ItemList
               items={items}
               onDeleteItem={handleDeleteItem}

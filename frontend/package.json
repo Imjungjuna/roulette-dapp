@@ -16,6 +16,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.8",
+    "vercel": "^42.3.0",
     "wagmi": "^2.15.5"
   },
   "devDependencies": {
