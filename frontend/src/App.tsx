@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef } from "react"; // useEffect와 useRef를 import 합니다.
+import { useState, useEffect, useRef } from "react";
+import { Menu } from "lucide-react";
 import ItemInput from "./components/ItemInput";
 import ItemList from "./components/ItemList";
 import SpinButton from "./components/SpinButton";
 import ResultDisplay from "./components/ResultDisplay";
+import SpinResultCard from "./components/SpinResultCard";
 import type { RouletteItem } from "./types";
 import "./App.css";
 import { AuthButton } from "./components/AuthButton";
@@ -15,6 +17,8 @@ function App() {
   );
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const animationFrameIdRef = useRef<number | null>(null); // 애니메이션 프레임 ID를 저장하기 위한 ref
+
+  const sidebarContainerRef = useRef<HTMLDivElement>(null);
 
   const handleAddItem = (text: string) => {
     if (!text.trim()) return;
@@ -114,18 +118,82 @@ function App() {
     animate();
   };
 
+  const handleMouseEnterSidebar = () => {
+    document.body.style.overflow = "hidden";
+    console.log(
+      "HTMLDivElement looks like this: ",
+      sidebarContainerRef.current
+    );
+    if (sidebarContainerRef.current) {
+      console.log(
+        "Sidebar container width:",
+        sidebarContainerRef.current.offsetWidth
+      );
+    }
+  };
+
+  const handleMouseLeaveSidebar = () => {
+    document.body.style.overflow = "unset";
+    if (sidebarContainerRef.current) {
+      console.log(
+        "Sidebar container width:",
+        sidebarContainerRef.current.offsetWidth
+      );
+    }
+  };
+
+  const handleSidebarTransitionEnd = () => {
+    if (sidebarContainerRef.current) {
+      console.log(
+        "Sidebar container TRANSITION ENDED. Final width:",
+        sidebarContainerRef.current.offsetWidth
+      );
+    }
+  };
+
   // 컴포넌트가 언마운트될 때 진행 중인 애니메이션 프레임 요청을 정리합니다.
   useEffect(() => {
+    // if (sidebarContainerRef.current) {
+    //   console.log(
+    //     "Sidebar container width:",
+    //     sidebarContainerRef.current.offsetWidth
+    //   );
+    // }
+
     return () => {
       if (animationFrameIdRef.current) {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
+      document.body.style.overflow = "unset";
     };
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center p-0 sm:p-8">
-      <header className="pt-10 sm:pt-0 w-full max-w-4xl flex justify-around sm:justify-between my-6 md:my-8 items-center">
+    <div className="relative min-h-screen bg-slate-100 text-slate-100 flex flex-col items-center p-0">
+      {/* 사이드바 컨테이너 */}
+      <div
+        key={"sidebar-menuicon"}
+        className="fixed top-6 left-4 size-11 z-1000 peer/menuicon group hover:cursor-pointer bg-transparent"
+      >
+        <div
+          onMouseEnter={handleMouseEnterSidebar}
+          className="absolute flex size-full  bg-transparent items-center justify-center z-200"
+        >
+          <Menu size="20" strokeWidth={1.5} color="black" />
+        </div>
+        <div className="absolute size-full z-100 rounded-full group-hover:opacity-60 opacity-0 bg-gray-300  duration-200 transform transition"></div>
+      </div>
+      <div
+        key={"wrapper-for-scroll-ref"}
+        ref={sidebarContainerRef}
+        onMouseEnter={handleMouseEnterSidebar}
+        onMouseLeave={handleMouseLeaveSidebar}
+        onTransitionEnd={handleSidebarTransitionEnd}
+        className="transition-all -translate-x-full md:translate-x-0 fixed top-0 bottom-0 left-0 hidden md:block delay-100 duration-300 ease-out h-screen w-18 md:peer-hover/menuicon:w-[272px] md:hover:w-[272px] bg-gray-200 "
+      ></div>
+
+      {/* 헤더와 메인 컨텐츠 영역 */}
+      <header className="pt-10 sm:pt-0 w-100dvh max-w-4xl flex justify-around sm:justify-between my-6 md:my-8 items-center">
         <h1 className="pl-4 md:pl-6 text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
           할일 정하기 룰렛! 뭘 할지 고민된다면..
         </h1>
@@ -136,8 +204,7 @@ function App() {
           <AuthButton />
         </div>
       </header>
-
-      <main className="w-full max-w-4xl bg-slate-800 shadow-2xl rounded-lg p-3 sm:p-8 mt-6">
+      <main className="w-100dvh max-w-4xl bg-slate-800 shadow-2xl rounded-lg p-3 sm:p-8 mt-6">
         <div className="mb-6 md:mb-10">
           <ItemInput onAddItem={handleAddItem} disabled={isSpinning} />
         </div>
@@ -171,8 +238,11 @@ function App() {
             <ResultDisplay selectedItem={selectedItem} />
           </div>
         )}
-      </main>
 
+        <div className="mt-8">
+          <SpinResultCard />
+        </div>
+      </main>
       <footer className="absolute w-full bottom-8 max-w-3xl text-center text-sm text-slate-500">
         <p>
           &copy; {new Date().getFullYear()} My Roulette DApp. All rights
