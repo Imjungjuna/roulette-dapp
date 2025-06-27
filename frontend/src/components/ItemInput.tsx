@@ -16,14 +16,17 @@ const ItemInput: React.FC<ItemInputProps> = ({ onAddItem, disabled }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-3">
+    <form
+      onSubmit={handleSubmit}
+      className="flex gap-3 rounded-full bg-red-300"
+    >
       <input
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="룰렛에 추가할 내용 입력..."
         disabled={disabled}
-        className="flex-grow p-3 sm:p-3 text-sm sm:text-base bg-slate-700 border border-slate-600 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-shadow text-slate-100 placeholder-slate-400 disabled:opacity-50"
+        className="flex-grow p-3 sm:p-3 text-sm sm:text-base focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-shadow text-slate-100 placeholder-slate-400 disabled:opacity-50"
       />
       <button
         type="submit"

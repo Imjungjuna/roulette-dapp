@@ -7,7 +7,6 @@ import ResultDisplay from "./components/ResultDisplay";
 import SpinResultCard from "./components/SpinResultCard";
 import type { RouletteItem } from "./types";
 import "./App.css";
-import { AuthButton } from "./components/AuthButton";
 
 function App() {
   const [items, setItems] = useState<RouletteItem[]>([]);
@@ -169,17 +168,14 @@ function App() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-slate-100 text-slate-100 flex flex-col items-center p-0">
-      {/* 사이드바 컨테이너 */}
-      <div
-        key={"sidebar-menuicon"}
-        className="fixed top-6 left-4 size-11 z-1000 peer/menuicon group hover:cursor-pointer bg-transparent"
-      >
+    <div className="min-h-screen fixed bg-white text-slate-100 flex flex-col items-center p-0">
+      {/* 사이드바 컨테이너: 메뉴 버튼 포함, 구조 개선 안되나? */}
+      <div className="fixed top-6 left-4 size-11 z-1000 peer/menuicon group hover:cursor-pointer bg-transparent">
         <div
           onMouseEnter={handleMouseEnterSidebar}
           className="absolute flex size-full  bg-transparent items-center justify-center z-200"
         >
-          <Menu size="20" strokeWidth={1.5} color="black" />
+          <Menu size="20" strokeWidth={2} color="black" />
         </div>
         <div className="absolute size-full z-100 rounded-full group-hover:opacity-60 opacity-0 bg-gray-300  duration-200 transform transition"></div>
       </div>
@@ -192,25 +188,26 @@ function App() {
         className="transition-all -translate-x-full md:translate-x-0 fixed top-0 bottom-0 left-0 hidden md:block delay-100 duration-300 ease-out h-screen w-18 md:peer-hover/menuicon:w-[272px] md:hover:w-[272px] bg-gray-200 "
       ></div>
 
-      {/* 헤더와 메인 컨텐츠 영역 */}
-      <header className="pt-10 sm:pt-0 w-100dvh max-w-4xl flex justify-around sm:justify-between my-6 md:my-8 items-center">
-        <h1 className="pl-4 md:pl-6 text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
-          할일 정하기 룰렛! 뭘 할지 고민된다면..
+      {/* 헤더 영역: 메뉴 버튼은 사이드바에 포함 */}
+      <header className="w-[100vw] items-start flex max-w-4xl h-15">
+        <h1 className="pt-7 pl-15 w-fit text-2xl font-bold text-black">
+          할 일 정하기 룰렛
         </h1>
-        <h1 className="hidden absolute pl-4 md:pl-6 text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
-          투두리스트 룰렛, 투두 룰렛
-        </h1>
-        <div className="sm:w-32 w-20 mr-2 md:mr-4 h-10 hover:scale-101 transition transform bg-slate-700 hover:cursor-pointer rounded-md flex flex-row items-center justify-center text-sm text-slate-400">
-          <AuthButton />
-        </div>
       </header>
-      <main className="w-100dvh max-w-4xl bg-slate-800 shadow-2xl rounded-lg p-3 sm:p-8 mt-6">
-        <div className="mb-6 md:mb-10">
-          <ItemInput onAddItem={handleAddItem} disabled={isSpinning} />
-        </div>
+
+      {/* 메인 컨텐츠 영역 */}
+      <main className="relative w-screen h-[calc(100vh-60px)] bg-white p-5 sm:p-8 mt-6">
+        {/* 목록 입력 전에 보여주는 안내 문구 */}
+        {items.length === 0 && (
+          <div className="fixed inset-0">
+            <div className="w-screen absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[28px] font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
+              뭘 할지 고민된다면..
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="md:col-span-2 bg-slate-700 py-4 p-3 sm:p-4 rounded-md min-h-40">
+          <div className="md:col-span-2 bg-white py-4 p-3 sm:p-4 rounded-md min-h-40">
             <ItemList
               items={items}
               onDeleteItem={handleDeleteItem}
@@ -218,14 +215,13 @@ function App() {
               highlightedItemId={highlightedItemId}
             />
           </div>
-          <div className="flex bg-slate-700 p-3 rounded-md">
+          <div className="flex bg-white p-3 rounded-md">
             <SpinButton
               onSpin={handleSpin}
               disabled={isSpinning || items.length === 0}
             />
           </div>
         </div>
-
         {isSpinning && (
           <div className="mt-8 text-center text-purple-500">
             <p className="text-lg md:text-xl font-semibold animate-pulse">
@@ -233,22 +229,26 @@ function App() {
             </p>
           </div>
         )}
-        {selectedItem && !isSpinning && (
+        {/* {selectedItem && !isSpinning && (
           <div className="mt-8">
             <ResultDisplay selectedItem={selectedItem} />
           </div>
-        )}
-
-        <div className="mt-8">
+        )} */}
+        {/* <div className="mt-8">
           <SpinResultCard />
+        </div> */}
+
+        {/* 아이템 입력 인풋 */}
+        <div className="absolute bottom-16 w-full left-0 right-0 px-5">
+          <ItemInput onAddItem={handleAddItem} disabled={isSpinning} />
         </div>
       </main>
-      <footer className="absolute w-full bottom-8 max-w-3xl text-center text-sm text-slate-500">
+      {/* <footer className="absolute w-full bottom-8 max-w-3xl text-center text-sm text-slate-500">
         <p>
           &copy; {new Date().getFullYear()} My Roulette DApp. All rights
           reserved.
         </p>
-      </footer>
+      </footer> */}
     </div>
   );
 }

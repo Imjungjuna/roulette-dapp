@@ -14,14 +14,6 @@ const ItemList: React.FC<ItemListProps> = ({
   isSpinning,
   highlightedItemId,
 }) => {
-  if (items.length === 0) {
-    return (
-      <p className="text-left text-slate-400 py-4">
-        아직 추가된 항목이 없습니다. 내용을 입력해주세요!
-      </p>
-    );
-  }
-
   return (
     <ul className="space-y-2">
       {items.map((item /*, index */) => (
