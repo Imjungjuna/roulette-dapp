@@ -125,7 +125,7 @@ function App() {
     );
     if (sidebarContainerRef.current) {
       console.log(
-        "Sidebar container width:",
+        "Sidebar container wibdth:",
         sidebarContainerRef.current.offsetWidth
       );
     }
@@ -200,35 +200,34 @@ function App() {
         {/* 목록 입력 전에 보여주는 안내 문구 */}
         {items.length === 0 && (
           <div className="fixed inset-0">
-            <div className="w-screen absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[28px] font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
+            <div className="w-screen absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[32px] font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
               뭘 할지 고민된다면..
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="md:col-span-2 bg-white py-4 p-3 sm:p-4 rounded-md min-h-40">
-            <ItemList
-              items={items}
-              onDeleteItem={handleDeleteItem}
-              isSpinning={isSpinning}
-              highlightedItemId={highlightedItemId}
-            />
-          </div>
-          <div className="flex bg-white p-3 rounded-md">
+        {/* 아이템 리스트 */}
+        <div className="w-full min-h-40 max-h-124 overflow-y-auto overflow-x-visible">
+          <ItemList
+            items={items}
+            onDeleteItem={handleDeleteItem}
+            isSpinning={isSpinning}
+            highlightedItemId={highlightedItemId}
+          />
+        </div>
+
+        {/* 룰렛 돌리기 버튼. 돌리기 전, 돌리는 중, 돌린 이후 3가지 상태에 따라 다른 ui가 보여져야 함 */}
+        <div className="absolute bottom-42 left-0 right-0 bg-transparent rounded-md flex justify-center">
+          {/* w-full 하면 인접한 relative 부모 기준으로 100%의 너비가 설정되어야 하는 것 아닌가? 실제로는 오른쪽으로 삐져나감 */}
+
+          {items.length > 0 && (
             <SpinButton
               onSpin={handleSpin}
               disabled={isSpinning || items.length === 0}
             />
-          </div>
+          )}
         </div>
-        {isSpinning && (
-          <div className="mt-8 text-center text-purple-500">
-            <p className="text-lg md:text-xl font-semibold animate-pulse">
-              돌아가는 중...
-            </p>
-          </div>
-        )}
+
         {/* {selectedItem && !isSpinning && (
           <div className="mt-8">
             <ResultDisplay selectedItem={selectedItem} />

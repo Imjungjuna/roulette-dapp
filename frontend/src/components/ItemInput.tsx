@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Send } from "lucide-react";
 
 interface ItemInputProps {
   onAddItem: (text: string) => void;
@@ -18,7 +19,7 @@ const ItemInput: React.FC<ItemInputProps> = ({ onAddItem, disabled }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex gap-3 rounded-full bg-red-300"
+      className="flex justify-between rounded-full border border-black/60 h-12"
     >
       <input
         type="text"
@@ -26,14 +27,14 @@ const ItemInput: React.FC<ItemInputProps> = ({ onAddItem, disabled }) => {
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="룰렛에 추가할 내용 입력..."
         disabled={disabled}
-        className="flex-grow p-3 sm:p-3 text-sm sm:text-base focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-shadow text-slate-100 placeholder-slate-400 disabled:opacity-50"
+        className="px-5 h-full -translate-y-0.5 text-base text-black disabled:opacity-50"
       />
       <button
         type="submit"
         disabled={disabled || !inputValue.trim()}
-        className="px-6 py-2 sm:py-3 font-semibold bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="my-auto mr-3 size-9 flex items-center justify-center bg-gray-200 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span className="sm:block hidden">항목</span> 추가
+        <Send size={20} color="black" className="translate-y-0.3" />
       </button>
     </form>
   );

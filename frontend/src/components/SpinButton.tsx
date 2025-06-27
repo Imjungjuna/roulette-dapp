@@ -10,9 +10,9 @@ const SpinButton: React.FC<SpinButtonProps> = ({ onSpin, disabled }) => {
     <button
       onClick={onSpin}
       disabled={disabled}
-      className="size-full px-4 py-8 text-lg sm:text-xl font-bold bg-black/90 bg-gradient-to-r hover:from-purple-700 hover:to-red-800 text-white rounded-md shadow-lg transform transition-all hover:scale-102 focus:outline-none focus:ring-4 disabled:opacity-50"
+      className="size-full w-50 h-17 text-[20px] font-bold bg-[#6A9BF7] text-white rounded-full shadow-lg"
     >
-      룰렛 돌리기
+      {disabled ? "당신의 운명은?" : "존나 돌리기"}
     </button>
   );
 };
