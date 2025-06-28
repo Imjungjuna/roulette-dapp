@@ -5,3 +5,9 @@
   padding: 0;
   text-align: center;
 }
+
+input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important; /* 필요하다면 추가 */
+}

@@ -3,18 +3,20 @@ import { Menu } from "lucide-react";
 import ItemInput from "./components/ItemInput";
 import ItemList from "./components/ItemList";
 import SpinButton from "./components/SpinButton";
-import ResultDisplay from "./components/ResultDisplay";
-import SpinResultCard from "./components/SpinResultCard";
+// import ResultDisplay from "./components/ResultDisplay";
+// import SpinResultCard from "./components/SpinResultCard";
 import type { RouletteItem } from "./types";
 import "./App.css";
 
 function App() {
   const [items, setItems] = useState<RouletteItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState<RouletteItem | null>(null);
-  const [highlightedItemId, setHighlightedItemId] = useState<string | null>(
-    null
-  );
-  const [isSpinning, setIsSpinning] = useState<boolean>(false);
+  const [selectedItem, setSelectedItem] =
+    useState<RouletteItem | null>(null);
+  const [highlightedItemId, setHighlightedItemId] =
+    useState<string | null>(null);
+  const [isSpun, setIsSpun] = useState<boolean>(false);
+  const [isSpinning, setIsSpinning] =
+    useState<boolean>(false);
   const animationFrameIdRef = useRef<number | null>(null); // 애니메이션 프레임 ID를 저장하기 위한 ref
 
   const sidebarContainerRef = useRef<HTMLDivElement>(null);
@@ -29,14 +31,16 @@ function App() {
   };
 
   const handleDeleteItem = (id: string) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    setItems((prevItems) =>
+      prevItems.filter((item) => item.id !== id)
+    );
     if (selectedItem?.id === id) {
       setSelectedItem(null);
     }
   };
 
   const handleSpin = () => {
-    if (items.length === 0) {
+    if (items.length <= 1) {
       alert("룰렛에 아이템을 추가해주세요!");
       return;
     }
@@ -46,13 +50,16 @@ function App() {
     // highlightedItemId는 애니메이션 첫 프레임에서 설정됩니다.
 
     const totalDuration = 5000; // 총 애니메이션 시간: 5초
-    const finalWinnerIndex = Math.floor(Math.random() * items.length);
+    const finalWinnerIndex = Math.floor(
+      Math.random() * items.length
+    );
     const finalWinnerItem = items[finalWinnerIndex]; // 최종 선택될 아이템 객체
 
     const animationStartTime = Date.now();
 
     // 이징 함수 (t: 진행률 0~1, 끝으로 갈수록 느려짐)
-    const easeOutQuad = (t: number): number => 1 - Math.pow(1 - t, 2);
+    const easeOutQuad = (t: number): number =>
+      1 - Math.pow(1 - t, 2);
 
     function animate() {
       const timeElapsed = Date.now() - animationStartTime;
@@ -86,19 +93,23 @@ function App() {
         items.length * numberOfFullSpins + finalWinnerIndex;
 
       const easedProgress = easeOutQuad(progress);
-      const currentVirtualStep = easedProgress * virtualTotalSteps;
+      const currentVirtualStep =
+        easedProgress * virtualTotalSteps;
 
       const currentHighlightArrayIndex =
         Math.floor(currentVirtualStep) % items.length;
 
       if (items[currentHighlightArrayIndex]) {
-        setHighlightedItemId(items[currentHighlightArrayIndex].id);
+        setHighlightedItemId(
+          items[currentHighlightArrayIndex].id
+        );
       }
 
       if (progress === 1) {
         setHighlightedItemId(finalWinnerItem.id);
         setSelectedItem(finalWinnerItem);
         setIsSpinning(false);
+        setIsSpun(true);
         if (animationFrameIdRef.current) {
           cancelAnimationFrame(animationFrameIdRef.current);
           animationFrameIdRef.current = null;
@@ -107,7 +118,8 @@ function App() {
       }
 
       // 다음 프레임 요청
-      animationFrameIdRef.current = requestAnimationFrame(animate);
+      animationFrameIdRef.current =
+        requestAnimationFrame(animate);
     }
 
     // 만약 이전 애니메이션 프레임 요청이 있었다면 취소합니다 (안전 장치).
@@ -170,12 +182,12 @@ function App() {
   return (
     <div className="min-h-screen fixed bg-white text-slate-100 flex flex-col items-center p-0">
       {/* 사이드바 컨테이너: 메뉴 버튼 포함, 구조 개선 안되나? */}
-      <div className="fixed top-6 left-4 size-11 z-1000 peer/menuicon group hover:cursor-pointer bg-transparent">
+      <div className="fixed top-5 left-3 size-11 z-1000 peer/menuicon group hover:cursor-pointer bg-transparent">
         <div
           onMouseEnter={handleMouseEnterSidebar}
           className="absolute flex size-full  bg-transparent items-center justify-center z-200"
         >
-          <Menu size="20" strokeWidth={2} color="black" />
+          <Menu size="18" strokeWidth={2} color="black" />
         </div>
         <div className="absolute size-full z-100 rounded-full group-hover:opacity-60 opacity-0 bg-gray-300  duration-200 transform transition"></div>
       </div>
@@ -190,24 +202,24 @@ function App() {
 
       {/* 헤더 영역: 메뉴 버튼은 사이드바에 포함 */}
       <header className="w-[100vw] items-start flex max-w-4xl h-15">
-        <h1 className="pt-7 pl-15 w-fit text-2xl font-bold text-black">
+        <h1 className="pt-7 pl-14 w-fit text-xl font-bold text-black">
           할 일 정하기 룰렛
         </h1>
       </header>
 
       {/* 메인 컨텐츠 영역 */}
-      <main className="relative w-screen h-[calc(100vh-60px)] bg-white p-5 sm:p-8 mt-6">
+      <main className="relative w-screen h-[calc(100vh-60px)] bg-white p-5 sm:p-8">
         {/* 목록 입력 전에 보여주는 안내 문구 */}
         {items.length === 0 && (
           <div className="fixed inset-0">
-            <div className="w-screen absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[32px] font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
+            <div className="w-screen absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[28px] font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
               뭘 할지 고민된다면..
             </div>
           </div>
         )}
 
         {/* 아이템 리스트 */}
-        <div className="w-full min-h-40 max-h-124 overflow-y-auto overflow-x-visible">
+        <div className="w-full min-h-40 max-h-94 overflow-y-auto overflow-x-visible">
           <ItemList
             items={items}
             onDeleteItem={handleDeleteItem}
@@ -216,15 +228,22 @@ function App() {
           />
         </div>
 
-        {/* 룰렛 돌리기 버튼. 돌리기 전, 돌리는 중, 돌린 이후 3가지 상태에 따라 다른 ui가 보여져야 함 */}
-        <div className="absolute bottom-42 left-0 right-0 bg-transparent rounded-md flex justify-center">
+        {/* 룰렛 돌리기와 결과 다운로드 버튼. 3가지 상태에 따른 ui가 보여져야 함 */}
+        <div className="absolute h-17 bottom-42 left-0 right-0 bg-transparent flex justify-center items-center gap-2.5">
           {/* w-full 하면 인접한 relative 부모 기준으로 100%의 너비가 설정되어야 하는 것 아닌가? 실제로는 오른쪽으로 삐져나감 */}
 
           {items.length > 0 && (
             <SpinButton
               onSpin={handleSpin}
-              disabled={isSpinning || items.length === 0}
+              disabled={isSpinning || items.length <= 1}
+              isSpinning={isSpinning}
+              isSpun={isSpun}
             />
+          )}
+          {isSpun && (
+            <button className="h-full w-45 text-[20px] font-bold bg-[#6A9BF7] text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors duration-200">
+              그래! 해보자
+            </button>
           )}
         </div>
 
@@ -238,8 +257,11 @@ function App() {
         </div> */}
 
         {/* 아이템 입력 인풋 */}
-        <div className="absolute bottom-16 w-full left-0 right-0 px-5">
-          <ItemInput onAddItem={handleAddItem} disabled={isSpinning} />
+        <div className="absolute bottom-6 w-full left-0 right-0 px-5">
+          <ItemInput
+            onAddItem={handleAddItem}
+            disabled={isSpinning}
+          />
         </div>
       </main>
       {/* <footer className="absolute w-full bottom-8 max-w-3xl text-center text-sm text-slate-500">

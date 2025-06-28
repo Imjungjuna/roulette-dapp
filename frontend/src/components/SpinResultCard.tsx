@@ -1,5 +1,3 @@
-import React from "react";
-
 const TodoRouletteCard = () => {
   return (
     <div
@@ -7,7 +5,8 @@ const TodoRouletteCard = () => {
       style={{
         fontFamily:
           '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
-        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        background:
+          "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
       }}
     >
       <div className="max-w-2xl w-full">
@@ -17,7 +16,8 @@ const TodoRouletteCard = () => {
             <div
               className="flex-1 rounded-xl p-6 text-white text-center flex flex-col justify-center min-h-32 max-md:min-h-24 max-md:p-4"
               style={{
-                background: "linear-gradient(135deg, #667eea, #764ba2)",
+                background:
+                  "linear-gradient(135deg, #667eea, #764ba2)",
               }}
             >
               <div className="text-3xl mb-2">🧹</div>
@@ -30,7 +30,10 @@ const TodoRouletteCard = () => {
             </div>
 
             {/* Right Section - Forget for Now */}
-            <div className="flex-1 flex flex-col" style={{ flex: "1.2" }}>
+            <div
+              className="flex-1 flex flex-col"
+              style={{ flex: "1.2" }}
+            >
               <div className="text-xs text-gray-500 mb-3 font-semibold text-center pb-2 border-b-2 border-gray-200 uppercase tracking-wide">
                 Forget for Now
               </div>
@@ -47,7 +50,8 @@ const TodoRouletteCard = () => {
                     key={index}
                     className="p-3 rounded-lg text-sm text-gray-600 border border-gray-200 relative overflow-hidden transition-all duration-200 hover:translate-x-1 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200"
                     style={{
-                      background: "linear-gradient(90deg, #f7fafc, #edf2f7)",
+                      background:
+                        "linear-gradient(90deg, #f7fafc, #edf2f7)",
                       position: "relative",
                     }}
                     // onMouseEnter={(e) => {
@@ -69,7 +73,10 @@ const TodoRouletteCard = () => {
                   >
                     <div
                       className="border-accent absolute left-0 top-0 h-full w-1 bg-gray-300 transition-all duration-200"
-                      style={{ width: "3px", background: "#cbd5e0" }}
+                      style={{
+                        width: "3px",
+                        background: "#cbd5e0",
+                      }}
                     />
                     {task}
                   </div>
@@ -83,7 +90,9 @@ const TodoRouletteCard = () => {
             <div className="font-semibold text-gray-600 mb-1">
               2024.06.15 14시 32분에 돌렸습니다.
             </div>
-            <div className="text-xs text-gray-400">@2025 Made by CoMit💜</div>
+            <div className="text-xs text-gray-400">
+              @2025 Made by CoMit💜
+            </div>
           </div>
         </div>
       </div>
